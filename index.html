@@ -2,105 +2,73 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>충효님의 카드 뒤집기 게임</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>충효의 게임 월드</title>
     <style>
-        body { text-align: center; background-color: #222; color: white; font-family: sans-serif; }
-        h1 { margin-top: 30px; }
-        #game-board { 
-            width: 400px; margin: 0 auto; display: flex; flex-wrap: wrap; 
-            justify-content: center; gap: 10px; margin-top: 20px;
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* 어두운 배경색 */
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 화면 전체 높이 사용 */
+            text-align: center;
         }
-        .card {
-            width: 80px; height: 120px; background-color: #ffcc00; border-radius: 10px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 40px; color: transparent; font-weight: bold;
-            transition: transform 0.3s;
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #00ffcc; /* 네온 민트색 */
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; /* 네온 빛 효과 */
         }
-        .card.flipped { background-color: white; color: black; transform: rotateY(180deg); }
-        .card.matched { background-color: #66ccff; color: white; cursor: default; }
-        #start-btn {
-            padding: 15px 30px; font-size: 20px; background-color: #ff4444; color: white;
-            border: none; border-radius: 10px; cursor: pointer; margin-top: 20px;
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #cccccc;
         }
-        #start-btn:hover { background-color: #ff0000; }
+
+        .game-btn {
+            background: linear-gradient(45deg, #ff0099, #493240);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 153, 0.4);
+            transition: transform 0.2s;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            display: inline-block;
+        }
+
+        .game-btn:hover {
+            transform: scale(1.1); /* 마우스 올리면 커지는 효과 */
+            background: linear-gradient(45deg, #ff0099, #ff6600);
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🎴 충효의 메모리 게임 🎴</h1>
-    <p>배경음악과 함께 카드를 맞춰보세요!</p>
+    <h1>GAME WORLD</h1>
     
-    <button id="start-btn" onclick="startGame()">게임 시작 (음악 큐!)</button>
-    <div id="game-board"></div>
+    <p>충효님이 만든 웹 게임 세상에 오신 것을 환영합니다!</p>
 
-    <script>
-        // 1. 음악 설정 (충효님의 구글 드라이브 파일)
-        var bgm = new Audio('bgm.mp3');
-        bgm.loop = true; 
-        bgm.volume = 0.5;
+    <a href="#" class="game-btn" onclick="alert('게임이 준비 중입니다!')">게임 시작하기</a>
 
-        // 2. 게임 데이터
-        const emojis = ['🍎', '🍎', '🍌', '🍌', '🍇', '🍇', '🍉', '🍉', '🍓', '🍓', '🍒', '🍒'];
-        let shuffledEmojis = [];
-        let flippedCards = [];
-        let matchedCount = 0;
+    <footer>
+        © 2026 Chung-Hyo's Game Studio
+    </footer>
 
-        function startGame() {
-            // 음악 재생 (브라우저 정책 때문에 버튼 눌렀을 때 시작)
-            bgm.play().catch(e => console.log("음악 재생 실패"));
-            document.getElementById('start-btn').style.display = 'none'; // 버튼 숨기기
-            
-            // 게임판 초기화
-            const board = document.getElementById('game-board');
-            board.innerHTML = '';
-            shuffledEmojis = emojis.sort(() => 0.5 - Math.random()); // 카드 섞기
-            matchedCount = 0;
-
-            // 카드 만들기
-            shuffledEmojis.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.index = index;
-                card.dataset.emoji = emoji;
-                card.onclick = () => flipCard(card);
-                board.appendChild(card);
-            });
-        }
-
-        function flipCard(card) {
-            if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
-                card.classList.add('flipped');
-                card.innerText = card.dataset.emoji; // 이모지 보여주기
-                flippedCards.push(card);
-
-                if (flippedCards.length === 2) {
-                    checkMatch();
-                }
-            }
-        }
-
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            if (card1.dataset.emoji === card2.dataset.emoji) {
-                // 맞췄을 때
-                card1.classList.add('matched');
-                card2.classList.add('matched');
-                flippedCards = [];
-                matchedCount += 2;
-                if (matchedCount === emojis.length) {
-                    setTimeout(() => alert("🎉 축하합니다! 모든 카드를 다 맞췄습니다!"), 500);
-                }
-            } else {
-                // 틀렸을 때 (1초 뒤 다시 뒤집기)
-                setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card1.innerText = '';
-                    card2.classList.remove('flipped');
-                    card2.innerText = '';
-                    flippedCards = [];
-                }, 1000);
-            }
-        }
-    </script>
 </body>
 </html>
